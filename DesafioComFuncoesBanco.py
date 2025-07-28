@@ -62,7 +62,7 @@ def main():
          else:
           print("Operação inválida, por favor selecione novamente a operação desejada.")     
      
-def cpf_existe(cpf):
+def cpf_existe(cpf,usuarios):
     for usuario in usuarios:
         if usuario["cpf"] == cpf:
             return True
