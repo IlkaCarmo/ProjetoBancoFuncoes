@@ -32,20 +32,20 @@ def main():
           nascimento = input("Informe sua data de nascimento: ")
           cpf = input("Informe o cpf: ")
           endereco = input("Informe seu endereço: ")
-          criar_usuario(nome,nascimento, cpf,endereco,usuarios,contas)
+          criar_usuario(nome,nascimento, cpf,endereco,usuarios)
 
          elif opcao == "2":
-          numero_conta = + 1
+          numero_conta += 1 
           cpf = input("Informe o cpf: ")
           criar_conta(cpf,numero_conta,usuarios,contas)
     
          elif opcao == "3":
           valor = float(input("Informe o valor do depósito: "))
-          deposito(valor,extrato,saldo)
+          saldo, extrato = deposito(valor,extrato,saldo)  # Atualiza saldo e extrato
 
          elif opcao == "4":
           valor = float(input("Informe o valor do saque: "))
-          saque(valor=valor,saldo =saldo,numero_saques=numero_saques,limite=limite,LIMITE_SAQUES=LIMITE_SAQUES,extrato=extrato)
+          saldo, extrato, numero_saques = saque(valor=valor,saldo=saldo,numero_saques=numero_saques,limite=limite,LIMITE_SAQUES=LIMITE_SAQUES,extrato=extrato)  # Atualiza saldo, extrato e número de saques
 
          elif opcao == "5": 
           extrato_da_conta(saldo, extrato= extrato)
@@ -61,7 +61,7 @@ def main():
 
          else:
           print("Operação inválida, por favor selecione novamente a operação desejada.")     
-     
+
 def cpf_existe(cpf,usuarios):
     for usuario in usuarios:
         if usuario["cpf"] == cpf:
@@ -69,9 +69,9 @@ def cpf_existe(cpf,usuarios):
     return False
 
 def criar_usuario(nome,nascimento, cpf,endereco,usuarios):
-             
-        if cpf_existe(cpf):  
-            return print("Já existe um usuário com esse CPF. Tente novamente.")
+        if cpf_existe(cpf, usuarios): 
+            print("Já existe um usuário com esse CPF. Tente novamente.")
+            return
         
         usuario = {
              'nome':nome,
@@ -80,12 +80,12 @@ def criar_usuario(nome,nascimento, cpf,endereco,usuarios):
              'endereco' : endereco
         }
         usuarios.append(usuario)
-        return print (f"Usuário '{nome}' cadastrado com sucesso!")
+        print (f"Usuário '{nome}' cadastrado com sucesso!")
 
-def criar_conta(cpf,numero_conta,contas,usuarios):
-             
-        if not cpf_existe(cpf):  
-            return print("CPF não encontrado, para cadastrar uma conta é nescessario ter um usuário cadastrado.")
+def criar_conta(cpf,numero_conta,usuarios,contas):
+        if not cpf_existe(cpf, usuarios): 
+            print("CPF não encontrado, para cadastrar uma conta é nescessario ter um usuário cadastrado.")
+            return
         
         conta = {
              'agencia':'0001',
@@ -93,42 +93,35 @@ def criar_conta(cpf,numero_conta,contas,usuarios):
              'cpf': cpf,
         }
         contas.append(conta)
-        return print (f"Usuário '{usuarios.nome}' cadastrado com sucesso!")   
-          
+        print (f"Conta criada com sucesso para o CPF '{cpf}'!") 
+
 def saque(valor,saldo,numero_saques,limite,LIMITE_SAQUES,extrato):
-    
     excedeu_saldo = valor >  saldo
-
     excedeu_limite = valor > limite
-
     excedeu_saques = numero_saques >= LIMITE_SAQUES
 
     if excedeu_saldo:
-        return print("Operação falhou! Você não tem saldo suficiente.")
-
+        print("Operação falhou! Você não tem saldo suficiente.")
     elif excedeu_limite:
-         return print("Operação falhou! O valor do saque excede o limite.")
-
+         print("Operação falhou! O valor do saque excede o limite.")
     elif excedeu_saques:
-         return print("Operação falhou! Número máximo de saques excedido.")
-
+         print("Operação falhou! Número máximo de saques excedido.")
     elif valor > 0:
          saldo -= valor
          extrato += f"Saque: R$ {valor:.2f}\n"
          numero_saques += 1
-         return print(f"Saque realizado com sucesso!\n Saldo: R$ {saldo:.2f}\n================ EXTRATO ================ \n{extrato}")
-                
+         print(f"Saque realizado com sucesso!\n Saldo: R$ {saldo:.2f}\n================ EXTRATO ================ \n{extrato}")
     else:
-         return print("Operação falhou! O valor informado é inválido.")
-
+         print("Operação falhou! O valor informado é inválido.")
+    return saldo, extrato, numero_saques  
 def deposito(valor,extrato,saldo):
-
      if valor > 0:
             saldo += valor
             extrato += f"Depósito: R$ {valor:.2f}\n"
-            return print(f"Deposito realizado com sucesso!\n Saldo: R$ {saldo:.2f}\n================ EXTRATO ================ \n{extrato}")
+            print(f"Deposito realizado com sucesso!\n Saldo: R$ {saldo:.2f}\n================ EXTRATO ================ \n{extrato}")
      else:
-         return print("Operação falhou! O valor informado é inválido.")
+         print("Operação falhou! O valor informado é inválido.")
+     return saldo, extrato  
 
 def extrato_da_conta(saldo, /, extrato):
 
